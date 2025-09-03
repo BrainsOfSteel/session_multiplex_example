@@ -15,3 +15,6 @@ tmux list-sessions
 
 ##map tty to docker tty
 ps -o pid,ppid,tty,command | grep docker
+
+#explain tmux
+https://medium.com/@Ba_zsh/how-i-went-from-confused-to-confident-understanding-ttys-ptys-ssh-and-tmux-d34252c0e452
