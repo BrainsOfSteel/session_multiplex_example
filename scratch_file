@@ -1,0 +1,17 @@
+docker build -t my-ubi9-app .
+
+#with custom file for build
+docker build -t my-ubi9-app -f Dockerfile2 .
+
+###
+docker run -d -p 8081:8081 my-ubi9-app
+
+##launching tmux session
+tmux new -s temp_tst
+
+tmux attach -t <session_name>
+tmux list-sessions
+
+
+##map tty to docker tty
+ps -o pid,ppid,tty,command | grep docker

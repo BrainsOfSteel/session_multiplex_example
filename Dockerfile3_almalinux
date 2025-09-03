@@ -1,0 +1,28 @@
+# ---- Stage 1: Build tmux using CentOS Stream 9 ----
+FROM almalinux:9 AS builder
+
+RUN dnf install -y gcc make automake libevent libevent-devel ncurses ncurses-devel \
+    bison pkg-config tar wget \
+    && dnf clean all
+
+WORKDIR /tmp
+RUN wget https://github.com/tmux/tmux/releases/download/3.4/tmux-3.4.tar.gz -O tmux.tar.gz \
+    && tar -xzf tmux.tar.gz \
+    && cd tmux-3.4 \
+    && ./configure && make && make install DESTDIR=/tmp/tmux-install
+
+# ---- Stage 2: Final UBI9 image ----
+FROM registry.access.redhat.com/ubi9/ubi:9.5-1742918310
+
+# Copy tmux binary built in CentOS Stream 9
+COPY --from=builder /tmp/tmux-install/ /
+
+# Optional: install Python
+RUN dnf install -y python39 python3-pip && dnf clean all
+
+# Copy your scripts
+RUN mkdir -p /opt/aes/
+COPY *.sh /opt/aes/
+RUN chmod +x /opt/aes/*.sh
+
+ENTRYPOINT ["/opt/aes/entrypoint.sh"]
